@@ -272,7 +272,7 @@ export default function Hero() {
           {/* CTA Button */}
           <div className="flex justify-center animate-fade-up animation-delay-500">
             <a
-              href="/Ayokanmi_Ogunyebi_Resume.pdf"
+              href="/Ayokanmi_Ogunyebi_CV.pdf"
               download
               className="group inline-flex items-center gap-3 px-8 py-4 bg-orange-400 hover:bg-orange-500 
               text-black font-semibold rounded-full transition-all duration-300 
