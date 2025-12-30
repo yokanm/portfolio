@@ -1,110 +1,125 @@
-import { ExternalLink, Github } from "lucide-react"
+"use client"
+
+import { useState } from "react"
 import Image from "next/image"
 
-type ProjectType = {
+interface Project {
+  id: number
+  title: string
+  category: string | string[]
+  description: string
   image: string
-  github?: string
-  live?: string
-  title?: string
-  description?: string
-  tech?: string[]
+  github: string
+  live: string
+  tech: string[]
 }
 
-export default function ProjectImage({ project }: { project: ProjectType }) {
+interface ProjectImageProps {
+  project: Project
+}
+
+// Desktop version with hover
+export default function ProjectImage({ project }: ProjectImageProps) {
+  const [isHovered, setIsHovered] = useState(false)
+
   return (
-    <div className="flex-1 relative group">
+    <div
+      className="relative flex-shrink-0 w-[500px] h-[350px] rounded-2xl overflow-hidden group cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <Image
         src={project.image}
-        alt={`${project.title ?? 'Project'} screenshot`}
-        width={800}
-        height={500}
-        className="w-full rounded-2xl object-cover"
+        alt={project.title}
+        fill
+        className="object-cover transition-transform duration-500 group-hover:scale-110"
       />
 
+      {/* Hover Overlay */}
       <div
-        className="flex items-center justify-center gap-4 rounded-2xl
-        absolute inset-0 bg-gray-900/90 opacity-0 group-hover:opacity-100 
-        transition-opacity duration-300"
+        className={`absolute inset-0 bg-black/80 flex items-center justify-center gap-6
+          transition-opacity duration-300 ${
+            isHovered ? "opacity-100" : "opacity-0"
+          }`}
       >
         <a
           href={project.github}
           target="_blank"
           rel="noopener noreferrer"
-          className="p-3 bg-orange-400 text-gray-900 rounded-full 
-          hover:bg-orange-300 transition-colors duration-300"
-          aria-label={`View ${project.title ?? 'project'} on GitHub`}
+          className="px-8 py-3 border-2 border-orange-400 text-orange-400 
+            rounded-lg font-semibold hover:bg-orange-400 hover:text-black 
+            transition-all duration-300"
         >
-          <Github className="w-5 h-5" />
+          GitHub
         </a>
         <a
           href={project.live}
           target="_blank"
           rel="noopener noreferrer"
-          className="p-3 bg-orange-400 text-gray-900 rounded-full 
-          hover:bg-orange-300 transition-colors duration-300"
-          aria-label={`View ${project.title ?? 'project'} live demo`}
+          className="px-8 py-3 bg-orange-400 text-black rounded-lg 
+            font-semibold hover:bg-orange-500 transition-all duration-300"
         >
-          <ExternalLink className="w-5 h-5" />
+          Live Demo
         </a>
       </div>
     </div>
   )
 }
 
-export function MobileImage({ project }: { project: ProjectType }) {
+// Mobile/Tablet version with visible buttons
+export function MobileImage({ project }: ProjectImageProps) {
   return (
-    <div className="relative group bg-gray-100 rounded-3xl p-6">
-      <Image
-        src={project.image}
-        alt={`${project.title ?? 'Project'} mobile screenshot`}
-        width={600}
-        height={400}
-        className="w-full rounded-2xl object-cover"
-      />
+    <div className="space-y-4">
+      {/* Image */}
+      <div className="relative w-full h-[250px] rounded-2xl overflow-hidden">
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          className="object-cover"
+        />
+      </div>
 
-      <div
-        className="flex flex-col items-center justify-center gap-4
-        absolute inset-0 bg-gray-900/90 opacity-0 group-hover:opacity-100 
-        transition-opacity duration-300"
-      >
-        <div className="flex gap-2 flex-wrap mt-4">
-          {(project.tech || []).map((techItem, idx) => (
-            <span
-              key={idx}
-              className="px-4 py-2 rounded-full border border-orange-400/50
-              text-orange-400 text-sm"
-            >
-              {techItem}
-            </span>
-          ))}
-        </div>
+      {/* Description */}
+      <p className="text-gray-400 text-sm leading-relaxed">
+        {project.description}
+      </p>
 
-        <p className="text-gray-400 mt-6 leading-relaxed mx-10 text-center">
-          {project.description}
-        </p>
-
-        <div className="flex items-center justify-center gap-4">
-          <a
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-3 bg-orange-400 text-gray-900 rounded-full 
-            hover:bg-orange-300 transition-colors duration-300"
-            aria-label={`View ${project.title ?? 'project'} on GitHub`}
+      {/* Tech Stack */}
+      <div className="flex flex-wrap gap-2">
+        {project.tech.map((techItem, idx) => (
+          <span
+            key={idx}
+            className="px-3 py-1.5 rounded-full border border-orange-400/50
+              text-orange-400 text-xs"
           >
-            <Github className="w-5 h-5" />
-          </a>
-          <a
-            href={project.live}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-3 bg-orange-400 text-gray-900 rounded-full 
-            hover:bg-orange-300 transition-colors duration-300"
-            aria-label={`View ${project.title ?? 'project'} live demo`}
-          >
-            <ExternalLink className="w-5 h-5" />
-          </a>
-        </div>
+            {techItem}
+          </span>
+        ))}
+      </div>
+
+      {/* Action Buttons - Always visible on mobile */}
+      <div className="flex gap-3 pt-2">
+        <a
+          href={project.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 py-2 px-4 border-2 border-orange-400 text-orange-400 
+            text-center rounded-lg font-semibold active:bg-orange-400 
+            active:text-black transition-all duration-200"
+        >
+          GitHub →
+        </a>
+        <a
+          href={project.live}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 py-2 px-4 items-center bg-orange-400 text-black text-center 
+            rounded-lg font-semibold active:bg-orange-500 
+            transition-all duration-200"
+        >
+          Live Demo →
+        </a>
       </div>
     </div>
   )
