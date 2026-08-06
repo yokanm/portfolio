@@ -18,26 +18,37 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks: (id) => {
+          if (!id.includes('node_modules')) return
           // Core React runtime — cached long-term
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          if (
+            id.includes('node_modules/react/') ||
+            id.includes('node_modules/react-dom') ||
+            id.includes('node_modules/react-router-dom')
+          ) {
+            return 'react-vendor'
+          }
           // Animation library — large, separate chunk
-          'framer':       ['framer-motion'],
+          if (id.includes('node_modules/framer-motion')) return 'framer'
           // Form validation — only loaded on contact page
-          'forms':        ['react-hook-form', '@hookform/resolvers', 'zod'],
-          // UI utilities — small but used everywhere
-          'ui':           ['lucide-react', 'class-variance-authority', 'clsx', 'tailwind-merge'],
+          if (
+            id.includes('node_modules/react-hook-form') ||
+            id.includes('node_modules/@hookform') ||
+            id.includes('node_modules/zod')
+          ) {
+            return 'forms'
+          }
           // Radix UI primitives
-          'radix': [
-            '@radix-ui/react-slot',
-            '@radix-ui/react-label',
-            '@radix-ui/react-toast',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-scroll-area',
-            '@radix-ui/react-separator',
-          ],
+          if (id.includes('node_modules/@radix-ui')) return 'radix'
+          // UI utilities — small but used everywhere
+          if (
+            id.includes('node_modules/lucide-react') ||
+            id.includes('node_modules/class-variance-authority') ||
+            id.includes('node_modules/clsx') ||
+            id.includes('node_modules/tailwind-merge')
+          ) {
+            return 'ui'
+          }
         },
       },
     },
