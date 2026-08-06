@@ -1,0 +1,41 @@
+# ─────────────────────────────────────────────────────────────
+# Security headers — applied to every response by Netlify.
+# https://docs.netlify.com/manage/routing/headers/
+#
+# If you switch analytics providers or add new third-party
+# scripts, update the `script-src` / `connect-src` /
+# `style-src` directives below to match.
+#
+#   Umami Cloud (default)        -> https://cloud.umami.is
+#   Self-hosted Umami            -> your instance's origin
+#   Microsoft Clarity            -> https://www.clarity.ms https://c.bing.com
+#   PostHog                      -> https://*.posthog.com (or self-hosted host)
+#
+# NOTE: script-src includes a sha256 hash for the small inline
+# theme-init script in index.html (prevents a flash of the wrong
+# theme on load). If you edit that script, recompute its hash:
+#   openssl dgst -sha256 -binary <<< '<script body>' | openssl base64
+# and update the 'sha256-...' value below.
+# ─────────────────────────────────────────────────────────────
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-XSS-Protection: 0
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-FOWb7CDMrKmgG25QxhFpZvnsdfsMYVG7dyd29yrD3z0=' https://cloud.umami.is; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://formspree.io https://cloud.umami.is; form-action 'self' https://formspree.io; frame-src 'none'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# Long-lived caching for fingerprinted build assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Never cache the HTML shell — always fetch the latest build
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate

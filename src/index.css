@@ -1,0 +1,383 @@
+@import "tailwindcss";
+
+/* ============================================
+   NOCTURNAL BAUHAUS — Design System
+   Neo-Brutalist, High Contrast, Industrial
+   ============================================ */
+
+@theme {
+  /* ---- Dark Mode (Default) ---- */
+  --color-background: #0a0a0a;
+  --color-surface: #1a1a1a;
+  --color-surface-dim: #131313;
+  --color-surface-container: #242424;
+  --color-surface-high: #2a2a2a;
+  --color-surface-highest: #353535;
+
+  --color-on-surface: #ffffff;
+  --color-on-surface-muted: #a0a0a0;
+  --color-on-surface-faint: #606060;
+  --color-on-surface-subtle: #3a3a3a;
+
+  --color-primary: #ffd700;
+  --color-on-primary: #1a1400;
+  --color-primary-dim: #e9c400;
+
+  --color-secondary: #ff3b30;
+  --color-tertiary: #0055ff;
+  --color-success: #00c851;
+
+  --color-outline: #2a2a2a;
+  --color-outline-strong: #ffffff;
+
+  /* ---- Typography ---- */
+  --font-display: "Space Grotesk", "Archivo Narrow", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+
+  /* ---- Spacing ---- */
+  --spacing-unit: 4px;
+
+  /* ---- Borders ---- */
+  --border-weight: 2px;
+  --radius: 0px;
+
+  /* ---- Shadows ---- */
+  --shadow-neo: 6px 6px 0px #ffffff;
+  --shadow-neo-sm: 4px 4px 0px #ffffff;
+  --shadow-neo-yellow: 6px 6px 0px #ffd700;
+  --shadow-neo-yellow-sm: 4px 4px 0px #ffd700;
+
+  /* Custom animation */
+  --animate-marquee: marquee 20s linear infinite;
+  --animate-blink: blink 1.2s step-end infinite;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Neo-brutalist zero-radius scoping.
+   Applied to portfolio UI elements only — does NOT affect Radix UI
+   portals, tooltips, dropdowns, or other third-party component roots
+   that render outside the #root tree. */
+#root *,
+#root *::before,
+#root *::after {
+  border-radius: 0;
+}
+
+/* Explicit opt-out for components that legitimately need a radius
+   (e.g. progress indicators, loading spinners, avatars). */
+.allow-radius,
+.allow-radius *,
+[data-allow-radius],
+[data-allow-radius] * {
+  border-radius: revert;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* 'scrollbar-width' removed due to limited browser support; WebKit/Blink scrollbars are handled via ::-webkit-scrollbar rules below and Firefox uses scrollbar-color */
+}
+
+/* Apply scrollbar-color only in browsers that support it (Firefox and newer engines) */
+@supports (scrollbar-color: auto) {
+  html {
+    scrollbar-color: #ffd700 #1a1a1a;
+  }
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6,
+.font-display,
+.font-headline {
+  font-family: "Archivo Narrow", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.font-mono,
+code, pre, kbd {
+  font-family: "JetBrains Mono", monospace;
+}
+
+/* ============================================
+   NEO-BRUTALIST UTILITIES
+   ============================================ */
+
+/* Borders */
+.neo-border {
+  border: 2px solid #ffffff;
+}
+
+.neo-border-dark {
+  border: 2px solid #1a1a1a;
+}
+
+.neo-border-b {
+  border-bottom: 2px solid #ffffff;
+}
+
+.neo-border-t {
+  border-top: 2px solid #ffffff;
+}
+
+.neo-border-l {
+  border-left: 2px solid #ffffff;
+}
+
+.neo-border-r {
+  border-right: 2px solid #ffffff;
+}
+
+/* Light mode borders */
+.light .neo-border,
+.neo-border-lm {
+  border-color: #1a1a1a;
+}
+
+/* Offset Shadows — Core Neo-Brutalist Effect */
+.neo-shadow {
+  box-shadow: 6px 6px 0px #ffffff;
+}
+
+.neo-shadow-sm {
+  box-shadow: 4px 4px 0px #ffffff;
+}
+
+.neo-shadow-yellow {
+  box-shadow: 6px 6px 0px #ffd700;
+}
+
+.neo-shadow-yellow-sm {
+  box-shadow: 4px 4px 0px #ffd700;
+}
+
+.neo-shadow-red {
+  box-shadow: 6px 6px 0px #ff3b30;
+}
+
+/* Hover lift effect */
+.neo-hover {
+  transition: box-shadow 0.1s ease, transform 0.1s ease;
+}
+
+.neo-hover:hover {
+  box-shadow: 8px 8px 0px #ffd700;
+  transform: translate(-2px, -2px);
+}
+
+.neo-hover-white:hover {
+  box-shadow: 8px 8px 0px #ffffff;
+  transform: translate(-2px, -2px);
+}
+
+/* Yellow highlight / slant accent */
+.highlight-yellow {
+  background: #ffd700;
+  color: #0a0a0a;
+  padding: 0 0.3em;
+  display: inline;
+  transform: skewX(-6deg);
+  display: inline-block;
+}
+
+/* Marquee */
+.marquee-track {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: '|';
+  animation: blink 1.2s step-end infinite;
+  color: #ffd700;
+}
+
+/* Scan line overlay for dark mode */
+.scanlines::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Grid background pattern */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255, 215, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 215, 0, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Section label style */
+.section-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffd700;
+}
+
+/* Tag / chip style */
+.skill-tag {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 2px solid var(--color-outline);
+  background: var(--color-surface);
+  color: var(--color-on-surface-muted);
+  padding: 0.2rem 0.6rem;
+  display: inline-block;
+  transition: all 0.1s ease;
+}
+
+.skill-tag:hover,
+.skill-tag.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+}
+
+/* Focus visible */
+:focus-visible {
+  outline: 2px solid #ffd700;
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: #ffd700;
+  color: #0a0a0a;
+}
+
+/* ============================================
+   LIGHT MODE OVERRIDES
+   ============================================ */
+
+.light {
+  --neo-border-color: #1a1a1a;
+  --neo-shadow-color: #1a1a1a;
+
+  /* ---- Surfaces ---- */
+  --color-background: #f5f0e8;
+  --color-surface: #ffffff;
+  --color-surface-dim: #ece4d6;
+  --color-surface-container: #ffffff;
+  --color-surface-high: #e3dac8;
+  --color-surface-highest: #d8cdb8;
+
+  /* ---- Text ---- */
+  --color-on-surface: #1a1a1a;
+  --color-on-surface-muted: #5a5248;
+  --color-on-surface-faint: #8a8278;
+  --color-on-surface-subtle: #c7bdac;
+
+  /* ---- Borders ---- */
+  --color-outline: #ddd2bf;
+  --color-outline-strong: #1a1a1a;
+
+  /* Accent colors (primary/secondary/tertiary/success/on-primary)
+     stay constant across themes by design. */
+}
+
+.light .neo-border { border-color: #1a1a1a; }
+.light .neo-border-b { border-color: #1a1a1a; }
+.light .neo-border-t { border-color: #1a1a1a; }
+.light .neo-border-l { border-color: #1a1a1a; }
+.light .neo-border-r { border-color: #1a1a1a; }
+.light .neo-shadow { box-shadow: 6px 6px 0px #1a1a1a; }
+.light .neo-shadow-sm { box-shadow: 4px 4px 0px #1a1a1a; }
+.light .neo-hover:hover { box-shadow: 8px 8px 0px #ffd700; }
+.light .skill-tag {
+  border-color: #1a1a1a;
+  background: #f5f0e8;
+  color: #4a4a4a;
+}
+.light .skill-tag:hover,
+.light .skill-tag.active {
+  border-color: #1a1a1a;
+  background: #ffcc00;
+  color: #1a1a1a;
+}
+.light ::selection {
+  background: #ffcc00;
+  color: #1a1a1a;
+}
+.light ::-webkit-scrollbar-track { background: #f5f0e8; }
+.light ::-webkit-scrollbar-thumb { background: #1a1a1a; }
+
+/* Page transition */
+.page-enter {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
