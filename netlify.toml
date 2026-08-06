@@ -1,0 +1,7 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 8 / Rolldown require Node >= 20.19 (LTS 22 is safe and recommended)
+  NODE_VERSION = "22"

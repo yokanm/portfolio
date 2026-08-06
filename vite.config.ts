@@ -3,6 +3,16 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
+/**
+ * True when the module lives inside a given npm package, regardless of the
+ * package-manager layout (npm top-level or pnpm `.pnpm` symlinks). Rolldown
+ * passes the resolved file path to `manualChunks`, so matching on the
+ * `node_modules/<pkg>/` path segment reliably identifies package boundaries.
+ */
+function isPackage(id: string, pkg: string): boolean {
+  return id.includes(`node_modules/${pkg}/`)
+}
+
 export default defineConfig({
   plugins: [
     react(),
@@ -18,26 +28,30 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) {
+            return
+          }
           // Core React runtime — cached long-term
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          if (isPackage(id, 'react') || isPackage(id, 'react-dom') || isPackage(id, 'react-router') || isPackage(id, 'react-router-dom')) {
+            return 'react-vendor'
+          }
           // Animation library — large, separate chunk
-          'framer':       ['framer-motion'],
+          if (isPackage(id, 'framer-motion')) {
+            return 'framer'
+          }
           // Form validation — only loaded on contact page
-          'forms':        ['react-hook-form', '@hookform/resolvers', 'zod'],
+          if (isPackage(id, 'react-hook-form') || isPackage(id, '@hookform') || isPackage(id, 'zod')) {
+            return 'forms'
+          }
           // UI utilities — small but used everywhere
-          'ui':           ['lucide-react', 'class-variance-authority', 'clsx', 'tailwind-merge'],
+          if (isPackage(id, 'lucide-react') || isPackage(id, 'class-variance-authority') || isPackage(id, 'clsx') || isPackage(id, 'tailwind-merge')) {
+            return 'ui'
+          }
           // Radix UI primitives
-          'radix': [
-            '@radix-ui/react-slot',
-            '@radix-ui/react-label',
-            '@radix-ui/react-toast',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-scroll-area',
-            '@radix-ui/react-separator',
-          ],
+          if (isPackage(id, '@radix-ui')) {
+            return 'radix'
+          }
         },
       },
     },
