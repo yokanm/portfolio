@@ -178,7 +178,7 @@ export function ContactPage() {
                 />
               </div>
 
-              {!hasFormspree && (
+              {/* {!hasFormspree && (
                 <div className="flex items-start gap-3 border-2 border-secondary/40 bg-secondary/5 px-5 py-4" role="alert">
                   <AlertCircle size={15} className="text-secondary flex-shrink-0 mt-0.5" />
                   <div>
@@ -194,7 +194,7 @@ export function ContactPage() {
                     </p>
                   </div>
                 </div>
-              )}
+              )} */}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <FormField label="Name" error={errors.name?.message} id="contact-name">
