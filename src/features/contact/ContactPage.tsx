@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { Mail, Github, Linkedin, MapPin, Send, Loader2, AlertCircle, ShieldCheck } from 'lucide-react';
+import { Mail, Github, Linkedin, MapPin, Send, Loader2, ShieldCheck } from 'lucide-react';
 import { SectionTitle } from '@/components/shared/SectionTitle';
 import { SeoTag } from '@/components/shared/SeoTag';
 import { Button } from '@/components/ui/button';
