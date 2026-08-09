@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { MapPin, Mail, Github, Linkedin, Shield, ArrowRight } from 'lucide-react';
 import { SectionTitle } from '@/components/shared/SectionTitle';
+import { SeoTag } from '@/components/shared/SeoTag';
 import { Button } from '@/components/ui/button';
 import { personalInfo } from '@/data/portfolio';
 import { Link } from 'react-router-dom';
@@ -44,6 +45,10 @@ const decisions = [
 export function AboutPage() {
   return (
     <div className="px-6 md:px-12 lg:px-16 py-16 md:py-24 max-w-6xl">
+      <SeoTag
+        title="About"
+        description={`${personalInfo.firstName} ${personalInfo.lastName} — Full-Stack Engineer with a Google Cybersecurity Professional Certificate. Security-first React, Node.js, PostgreSQL, and infrastructure.`}
+      />
       <SectionTitle index="01" label="About" title="The Engineer Behind the Code"
         description="Full-stack, security-conscious, and driven by craft." />
 

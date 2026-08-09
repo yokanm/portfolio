@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Home, User, Layers, Clock, Code2, Mail, FileText,
   Github, Linkedin, Menu, X, Sun, Moon, type LucideIcon,
@@ -23,8 +23,26 @@ function getIcon(name: string): LucideIcon {
 export function Navbar() {
   const { toggleTheme, isDark } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const initials = personalInfo.firstName[0] + personalInfo.lastName[0];
+
+  // Lock body scroll + close on Escape while the mobile drawer is open;
+  // restore focus to the menu button when it closes.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = original;
+      window.removeEventListener('keydown', onKey);
+      menuButtonRef.current?.focus();
+    };
+  }, [mobileOpen]);
 
   return (
     <>
@@ -141,6 +159,7 @@ export function Navbar() {
             {isDark ? <Sun size={17} aria-hidden="true" /> : <Moon size={17} aria-hidden="true" />}
           </button>
           <button
+            ref={menuButtonRef}
             onClick={() => setMobileOpen((v) => !v)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
@@ -172,6 +191,8 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
+              role="dialog"
+              aria-modal="true"
               aria-label="Mobile navigation"
               className="lg:hidden fixed left-0 top-14 bottom-0 w-64 z-50 bg-background border-r-2 border-outline-strong/10 flex flex-col"
             >

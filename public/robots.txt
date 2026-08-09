@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ayokanmi.dev/sitemap.xml
+Sitemap: https://kanmiportfolio.netlify.app/sitemap.xml

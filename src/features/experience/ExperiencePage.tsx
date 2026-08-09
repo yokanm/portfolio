@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Shield, Code2, CheckCircle2, ArrowRight } from 'lucide-react';
 import { SectionTitle } from '@/components/shared/SectionTitle';
+import { SeoTag } from '@/components/shared/SeoTag';
 import { Button } from '@/components/ui/button';
 import { engineeringDecisions, personalInfo } from '@/data/portfolio';
 import { Link } from 'react-router-dom';
@@ -33,6 +34,10 @@ const approach = [
 export function ExperiencePage() {
   return (
     <div className="px-6 md:px-12 lg:px-16 py-16 md:py-24 max-w-5xl">
+      <SeoTag
+        title="Engineering Approach"
+        description="The architectural decisions behind Ayokanmi Ogunyebi's projects — Argon2id, JWT rotation, RBAC, BullMQ, and why each technical choice was made."
+      />
       <SectionTitle
         index="01"
         label="Approach"

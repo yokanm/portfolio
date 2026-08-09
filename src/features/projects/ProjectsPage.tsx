@@ -3,39 +3,44 @@ import { motion } from 'framer-motion';
 import { Github } from 'lucide-react';
 import { SectionTitle } from '@/components/shared/SectionTitle';
 import { Button } from '@/components/ui/button';
+import { SeoTag } from '@/components/shared/SeoTag';
 import { ProjectCard } from './ProjectCard';
 import { projects, personalInfo } from '@/data/portfolio';
-import { getFeaturedProjects } from '@/lib/projectHelpers';
-import type { ProjectStatus } from '@/types';
 
-type FilterValue = 'all' | ProjectStatus;
+type FilterValue = 'all' | 'live' | 'frontend-live' | 'in-development';
 
 const FILTERS: { value: FilterValue; label: string }[] = [
-  { value: 'all',            label: 'All'            },
-  { value: 'live',           label: 'Live'           },
-  { value: 'private',        label: 'Private / API'  },
+  { value: 'all', label: 'All' },
+  { value: 'live', label: 'Live' },
+  { value: 'frontend-live', label: 'Frontend Live' },
   { value: 'in-development', label: 'In Development' },
 ];
+
+// Declared order already puts the flagship first.
+const flagship = projects.filter((p) => p.isFlagship);
+const others = projects.filter((p) => !p.isFlagship);
 
 export function ProjectsPage() {
   const [filter, setFilter] = useState<FilterValue>('all');
 
-  const featured = getFeaturedProjects();
-  const others = projects.filter((p) => !p.featured);
-
-  const applyFilter = (list: typeof projects) =>
+  const apply = (list: typeof projects) =>
     filter === 'all' ? list : list.filter((p) => p.status === filter);
 
-  const visibleFeatured = applyFilter(featured);
-  const visibleOthers   = applyFilter(others);
+  const visibleFlagship = apply(flagship);
+  const visibleOthers = apply(others);
 
   return (
     <div className="px-6 md:px-12 lg:px-16 py-16 md:py-24">
+      <SeoTag
+        path="/projects"
+        title="Projects"
+        description="Full-stack engineering case studies: PostBoard (multi-tenant platform), Cyber Gadget (e-commerce), TaskFlow (mobile). Each project documents architecture, decisions, security, and testing."
+      />
       <SectionTitle
         index="01"
         label="Projects"
-        title="Selected Work"
-        description="Each project has an engineering decision worth explaining — not just a tech stack list."
+        title="Engineering Work"
+        description="Full engineering case studies — architecture, decisions, trade-offs, security, and testing — not just a tech-stack list."
       />
 
       {/* Filter bar */}
@@ -57,17 +62,12 @@ export function ProjectsPage() {
         ))}
       </div>
 
-      {/* Featured */}
-      {visibleFeatured.length > 0 && (
-        <section aria-label="Featured projects" className="mb-16">
-          <h2 className="font-mono text-[0.6rem] uppercase tracking-widest text-on-surface-faint mb-6">
-            Featured — {visibleFeatured.length} project{visibleFeatured.length !== 1 ? 's' : ''}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {visibleFeatured.map((project, i) => (
-              <ProjectCard key={project.id} project={project} index={i} />
-            ))}
-          </div>
+      {/* Flagship */}
+      {visibleFlagship.length > 0 && (
+        <section aria-label="Flagship project" className="mb-16">
+          {visibleFlagship.map((project, i) => (
+            <ProjectCard key={project.slug} project={project} index={i} />
+          ))}
         </section>
       )}
 
@@ -75,18 +75,18 @@ export function ProjectsPage() {
       {visibleOthers.length > 0 && (
         <section aria-label="Other projects" className="mb-16">
           <h2 className="font-mono text-[0.6rem] uppercase tracking-widest text-on-surface-faint mb-6">
-            Earlier Work — {visibleOthers.length} project{visibleOthers.length !== 1 ? 's' : ''}
+            Selected Work — {visibleOthers.length} project{visibleOthers.length !== 1 ? 's' : ''}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {visibleOthers.map((project, i) => (
-              <ProjectCard key={project.id} project={project} index={visibleFeatured.length + i} />
+              <ProjectCard key={project.slug} project={project} index={i} />
             ))}
           </div>
         </section>
       )}
 
       {/* Empty state */}
-      {visibleFeatured.length === 0 && visibleOthers.length === 0 && (
+      {visibleFlagship.length === 0 && visibleOthers.length === 0 && (
         <div className="py-20 text-center" role="status">
           <p className="font-mono text-[0.65rem] uppercase tracking-widest text-on-surface-subtle">
             No projects match the selected filter.
@@ -109,7 +109,7 @@ export function ProjectsPage() {
         <div>
           <h3 className="font-display font-black text-2xl uppercase text-on-surface leading-tight">More on GitHub</h3>
           <p className="font-body text-sm text-on-surface-faint mt-2 max-w-md">
-            Explore more repositories, experiments, and open-source contributions.
+            Explore more repositories, experiments, and open-source work.
           </p>
         </div>
         <Button asChild variant="outline">

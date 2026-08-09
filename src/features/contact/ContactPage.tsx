@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { Mail, Github, Linkedin, MapPin, Send, Loader2, AlertCircle, ShieldCheck } from 'lucide-react';
 import { SectionTitle } from '@/components/shared/SectionTitle';
+import { SeoTag } from '@/components/shared/SeoTag';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -123,6 +124,10 @@ export function ContactPage() {
 
   return (
     <div className="px-6 md:px-12 lg:px-16 py-16 md:py-24">
+      <SeoTag
+        title="Contact"
+        description={`Contact ${personalInfo.name} about full-time remote engineering roles or contract work. Form goes directly to the inbox; replies within 48 hours.`}
+      />
       <SectionTitle
         index="01"
         label="Contact"

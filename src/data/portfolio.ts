@@ -1,30 +1,27 @@
-import type {
-  PersonalInfo, Project, SkillGroup, SecuritySkill,
-} from '@/types';
+import type { Project, EngineeringHighlight, PersonalInfo } from '@/types';
+import { skillGroups, appliedSecuritySkills, conceptualSecuritySkills } from './skills';
 
-// ============================================
+export { skillGroups, appliedSecuritySkills, conceptualSecuritySkills };
+
+// ============================================================
 // PERSONAL INFORMATION
-// ============================================
+// ============================================================
 export const personalInfo: PersonalInfo = {
   name: 'Ayokanmi Ogunyebi',
   firstName: 'Ayokanmi',
   lastName: 'Ogunyebi',
-  title: 'Full-Stack Software Developer',
+  title: 'Full-Stack Software Engineer',
   alternativeTitles: [
-    'SCALABLE WEB APPLICATIONS',
+    'MULTI-TENANT PLATFORMS',
     'SECURE FULL-STACK SYSTEMS',
     'SOFTWARE THAT USERS TRUST',
-    'Secure-by-Default Systems',
+    'PRODUCTION-READY APPS',
   ],
-  bio: `I'm a Full-Stack Software Developer based in Akure, Nigeria, working with React, Next.js, Node.js, TypeScript, PostgreSQL, and modern cloud technologies.
+  bio: `I'm a Full-Stack Software Engineer based in Akure, Nigeria, building secure, production-oriented systems across React/Next.js frontends, Node.js/Express APIs, database architecture, and deployment infrastructure.
 
-I build products end-to-end—from intuitive user experiences and scalable APIs to database architecture, authentication systems, background processing, and deployment workflows. My projects include e-commerce platforms, backend services, and cross-platform mobile applications used as practical solutions to real-world problems.
+My strongest work is a multi-tenant recruitment platform — five role portals, 101 API endpoints, 82 frontend routes — with authentication, RBAC, background workers, containerized CI, and load testing designed in from the start. That project is the proof I design, build, secure, test, and ship software rather than assemble features.
 
-Security influences how I design software. With a Google Cybersecurity Professional Certificate and hands-on implementation experience, I build authentication, authorization, validation, rate limiting, and secure data handling directly into the foundation of every application.
-
-I care about clean architecture, maintainable code, performance, and creating products that teams can confidently scale and support over time.
-
-This version feels more like someone companies would hire as a Full-Stack Developer while still highlighting your cybersecurity background. It focuses on capabilities and outcomes rather than listing tools.`,
+Security influences how I design software. With a Google Cybersecurity Professional Certificate and hands-on implementation, I build authentication, authorization, validation, rate limiting, and secure data handling into the foundation — not appended at the end.`,
   location: 'Akure, Nigeria (Remote)',
   email: 'ogunyebiayokanmi@gmail.com',
   githubUrl: 'https://github.com/yokanm',
@@ -32,269 +29,340 @@ This version feels more like someone companies would hire as a Full-Stack Develo
   availableForWork: true,
 };
 
-// ============================================
-// PROJECTS — status-driven, no hardcoded IDs in UI
-// ============================================
-export const projects: Project[] = [
-  {
-    id: 'job-board-api',
-    title: 'Job Board API',
-    category: 'REST API — Backend',
-    description:
-      'Production recruitment platform API supporting separate company and candidate authentication, secure token rotation, background email processing, Redis caching, and automated testing.',
-    longDescription: `Dual-entity auth treats Users and Companies as separate principals with separate JWT signing keys — a company token physically cannot authenticate as a user, enforced at the authorization guard level.
-
-Argon2id (64MiB memory cost) replaces bcrypt — memory-hard algorithm chosen because GPU hash-cracking attacks cost ~10x more compute. OWASP 2024 recommended.
-
-Redis caching uses TTL differentiation by resource volatility: job listings (60s), job detail (300s), tag list (600s). Cache is invalidated on write, not just expired passively.
-
-BullMQ processes emails as background jobs — never inline in request handlers. Exponential backoff retries. Worker runs as a separate process (Docker Compose wiring is a documented known gap).
-
-PostgreSQL uses pg_trgm extension with GIN indexes for full-text trigram search on job title and description — no LIKE table scans at scale.`,
-    techStack: ['Node.js', 'Express 5', 'TypeScript', 'PostgreSQL', 'Prisma ORM', 'Redis', 'BullMQ', 'Argon2id', 'JWT', 'Docker', 'Jest', 'Swagger'],
-    githubUrl: 'https://github.com/yokanm/job-board-api',
-    liveUrl: '',
-    status: 'live',
-    featured: true,
-    year: 2025,
-    metrics: ['35+ REST endpoints', 'Role-based access control', 'Token family revocation', '60%+ test coverage'],
-    engineeringDecision:
-      "Argon2id over bcrypt — OWASP-recommended memory-hard hashing with stronger GPU resistance.",
-  },
-  {
-    id: 'cyber-gadgets',
-    title: 'Cyber Gadget',
-    category: 'E-Commerce Platform',
-    description:
-      'Full-stack electronics store — Next.js 15 App Router, TypeScript, Supabase PostgreSQL, 200+ products. URL-persisted multi-param filtering, cursor pagination, 3-step checkout with Luhn algorithm card validation.',
-    longDescription: `Product fetching uses a lib/api.ts abstraction with separate server and browser Supabase clients — correctly mirrors the Next.js App Router server/client boundary. Server Components handle initial product load for SSR.
-
-Filter state lives in URL params via useSearchParams/router.replace. Filters survive page refresh, support bookmarking, and can be shared as links — behaviour that component state cannot provide.
-
-The 3-step checkout (Address → Shipping → Payment) includes Luhn algorithm card number validation, expiry date checking, field-level touch tracking, and ARIA live regions for screen reader feedback.
-
-Four contexts composed in dependency order: Toast → Auth → Cart → Wishlist. Cart uses a two-phase useEffect mount to prevent Next.js SSR/client hydration mismatch on localStorage state. Suspense boundaries wrap each product grid section independently.
-
-Known security debt: auth uses localStorage plaintext passwords. Documented migration to Supabase Auth tracked in repo.`,
-    techStack: ['Next.js 15', 'TypeScript', 'Supabase (PostgreSQL)', 'React 19', 'Tailwind CSS v4', 'Framer Motion', 'Radix UI', 'shadcn/ui'],
-    githubUrl: 'https://github.com/yokanm/Cyber-gadget',
-    liveUrl: 'https://cyber-gadget-v2.vercel.app/',
-    status: 'live',
-    featured: true,
-    year: 2024,
-    metrics: ['200+ products', 'SSR + CSR hybrid', '3-step checkout', 'URL-persisted filters'],
-    engineeringDecision:
-      'Filter state in URL params (useSearchParams + router.replace), not React state — filters survive refresh, support bookmarking, and can be shared as links.',
-  },
-  {
-    id: 'taskflow',
-    title: 'TaskFlow',
-    category: 'Full-Stack Mobile App',
-    description:
-      'Cross-platform task manager (iOS, Android, web) — React Native + Expo frontend with its own Express/Prisma backend. httpOnly refresh cookies, optimistic updates, Offline-capable state and silent session restore.',
-    longDescription: `Owns both ends of the stack: React Native client and Express/Prisma/SQLite backend, both in TypeScript.
-
-Auth pattern: access token lives only in Zustand memory (never localStorage or AsyncStorage); refresh token is httpOnly cookie inaccessible to JavaScript. XSS cannot steal either token. On app startup, silent re-auth uses the cookie to restore session without user action.
-
-Optimistic updates on task status cycling — tapping a status immediately updates the UI; API call runs in background; on failure, state reverts. Makes the app feel instant on slow connections.
-
-Zod schemas are mirrored server/client — same validation on both Express and React Native. Eliminates the class of bugs where the client allows something the server rejects.
-
-Six accent themes are stored in the user's DB row, not device storage — theme preference follows the user across reinstalls.`,
-    techStack: ['React Native', 'Expo SDK 54', 'Expo Router v6', 'TypeScript', 'NativeWind v4', 'Zustand', 'Zod', 'Express.js 5', 'Prisma 7', 'SQLite', 'JWT', 'bcrypt'],
-    githubUrl: 'https://github.com/yokanm/taskflow',
-    liveUrl: '',
-    status: 'private',
-    featured: true,
-    year: 2025,
-    metrics: ['iOS + Android + Web', '6 DB-persisted themes', 'Optimistic UI updates', 'httpOnly auth'],
-    engineeringDecision:
-      'Access token in memory only; refresh token in httpOnly cookie — XSS cannot read either. Silent re-auth on startup restores session from the cookie without user action.',
-  },
-  {
-    id: 'postboard',
-    title: 'PostBoard',
-    category: 'SaaS Frontend (WIP)',
-    description:
-      'Multi-role recruitment SaaS with separate candidate, company, and admin experiences. Features silent authentication recovery, server-state caching, analytics dashboards, and protected route architecture.',
-    longDescription: `Frontend client for the Job Board API with four role portals: CANDIDATE, RECRUITER, ADMIN, SUPERADMIN — each with its own route-grouped layout.
-
-apiFetch wrapper catches 401s, silently requests a new access token, then replays the original request. A parallel refresh queue prevents race conditions when multiple requests 401 simultaneously — all queued requests wait for one refresh, then continue.
-
-Three distinct state categories in three distinct homes: server state in TanStack Query (jobs, applications, profiles), auth state in Zustand authStore, UI state in Zustand uiStore. Mixing them creates stale data bugs.
-
-All TanStack Query keys defined in a centralized registry — prevents duplicate keys and simplifies cache invalidation across features.
-
-Note: Several dashboard pages (saved jobs, notifications, settings, audit-logs) are currently scaffold stubs. WIP.`,
-    techStack: ['React 19', 'TypeScript', 'Vite', 'React Router', 'TanStack Query', 'Zustand', 'React Hook Form', 'Zod', 'Recharts', 'Radix UI', 'Tailwind CSS v4'],
-    githubUrl: 'https://github.com/yokanm/postboard',
-    liveUrl: 'https://postboard-ruby.vercel.app/',
-    status: 'in-development',
-    featured: true,
-    year: 202,
-    metrics: ['4 role portals', '26 routes', '102 source files', 'Parallel refresh queue'],
-    engineeringDecision:
-      'Server state (TanStack Query), auth state (Zustand authStore), and UI state (Zustand uiStore) in three separate homes — different caching lifecycles require different tools.',
-  },
-  {
-    id: 'van-life',
-    title: 'Van Life',
-    category: 'Travel Rental Application',
-    description:
-      'React SPA with Firebase auth, protected routes, and a Mirage.js API mock layer — the full frontend built and tested before any real backend existed.',
-    longDescription: `Mirage.js intercepts real HTTP fetch calls and fulfils a defined API contract locally. The same frontend code runs against the mock and a real server — switching to a real backend requires zero frontend changes.
-
-Firebase handles real authentication: sign-up/sign-in, session persistence via onAuthStateChanged, and a RequireAuth component blocking private routes at the router level. React Router v6 loader functions handle route-level data fetching.
-
-Faker.js generates realistic mock data (names, prices, descriptions, images) for a production-realistic development environment.`,
-    techStack: ['React', 'Vite', 'React Router v6', 'Firebase (Auth + Firestore)', 'Mirage.js', 'Faker.js'],
-    githubUrl: 'https://github.com/yokanm/van-life',
-    liveUrl: 'https://verdant-malabi-1b8b1b.netlify.app/',
-    status: 'live',
-    featured: false,
-    year: 2024,
-    engineeringDecision:
-      'Mirage.js over hardcoded arrays because it intercepts real HTTP fetch calls — the same code path validates the API contract, not just the UI.',
-  },
-  {
-    id: 'react-dashboard',
-    title: 'React Admin Dashboard',
-    category: 'Data Visualization Dashboard',
-    description:
-      '11-route admin dashboard with a custom MUI two-layer token system (tokens → themeSettings) and five integrated data visualization libraries.',
-    longDescription: `tokens(mode) maps semantic color names to values; themeSettings(mode) assembles the full MUI theme from those tokens. One color change propagates automatically across all 11 routes — no per-component overrides needed.
-
-Five chart libraries integrated: Nivo Bar, Line, Pie, Geography, and FullCalendar. Each required its own data normalization layer since their input shapes differ.`,
-    techStack: ['React', 'Material UI', 'Nivo Charts', 'FullCalendar', 'Formik + Yup', 'React Router DOM'],
-    githubUrl: 'https://github.com/yokanm/React-Admin-DashBoard',
-    liveUrl: 'https://velvety-bonbon-3fb0ce.netlify.app/',
-    status: 'live',
-    featured: false,
-    year: 2023,
-    engineeringDecision:
-      'Two-layer theme system (tokens → themeSettings) so one color change propagates across all 11 routes — flat overrides would require touching each scene individually.',
-  },
-];
-
-// ============================================
-// ENGINEERING DECISIONS (for ExperiencePage)
-// ============================================
+// ============================================================
+// ENGINEERING DECISIONS (Experience/Approach page)
+// ============================================================
 export const engineeringDecisions: string[] = [
-  'Argon2id over bcrypt in Job Board API — memory-hard algorithm; GPU cracking costs ~10x more. OWASP 2024 recommended, not habit.',
-  'Dual-entity JWT in Job Board API — Users and Companies have separate signing keys. A company token physically cannot authenticate as a user.',
-  'Refresh token family revocation — a stolen token is detected on the next legitimate use and revokes the entire family.',
-  'URL-persisted filter state in Cyber Gadget — useSearchParams + router.replace. Filters survive refresh, support bookmarking and sharing.',
-  'httpOnly cookie + in-memory access token in TaskFlow — XSS cannot read either token. Session restores silently from cookie on startup.',
-  'Optimistic task updates in TaskFlow — UI updates immediately; API runs in background; failure reverts state automatically.',
-  'BullMQ email queue in Job Board API — emails never sent inline in request handlers. Exponential backoff retries, separate worker process.',
-  'pg_trgm + GIN indexes in Job Board API — full-text search at scale without LIKE table scans.',
-  'Cursor pagination in Cyber Gadget and Job Board API — no page drift on concurrent inserts, unlike offset pagination.',
-  'Two-phase localStorage mount in Cyber Gadget — prevents Next.js SSR/client hydration mismatch on cart state initialization.',
+  'Argon2id over bcrypt in JobBoard API — memory-hard algorithm; GPU cracking costs ~10x more compute. OWASP 2024 recommended, not habit.',
+  'Dual-entity JWT in JobBoard API — Users and Companies use separate signing keys; a company token physically cannot authenticate as a candidate.',
+  'Refresh-token family rotation — a reused stale token revokes the whole family, turning theft into a detectable event.',
+  'Multi-tenant RBAC in PostBoard — five actor surfaces, isolation enforced and tested via IDOR/authorization suites, not assumed.',
+  'Background email via BullMQ — queued jobs with retries + DLQ, never inline request work.',
+  'Redis-based rate limiting — per-role tunable limits protecting hot endpoints without skewing local state.',
+  'httpOnly cookie + in-memory access token in TaskFlow — XSS can read neither; session restores silently from the cookie.',
+  'Optimistic task updates in TaskFlow — UI responds immediately; API runs behind; failure reverts automatically.',
+  'pg_trgm + GIN indexes in JobBoard API — full-text search at scale without LIKE table scans.',
+  'URL-persisted filters in Cyber Gadget — useSearchParams + router.replace survive refresh and sharing.',
 ];
 
-// ============================================
-// SKILLS — accurate and clean
-// ============================================
-export const skillGroups: SkillGroup[] = [
-  {
-    id: 'core',
-    category: 'Core Stack',
-    icon: 'zap',
-    skills: [
-      { name: 'TypeScript', level: 'core' },
-      { name: 'React', level: 'core' },
-      { name: 'Next.js', level: 'core' },
-      { name: 'Node.js', level: 'core' },
-      { name: 'Express.js', level: 'core' },
-      { name: 'PostgreSQL', level: 'core' },
-      { name: 'Supabase', level: 'core' },
-      { name: 'Vite', level: 'core' },
-    ],
+// ============================================================
+// PROJECTS — SINGLE SOURCE OF TRUTH
+// ============================================================
+// Every claim is backed by the public repositories:
+//   postboard → github.com/yokanm/postboard   (frontend, React 19)
+//   jobboard  → github.com/yokanm/jobboard    (backend API, Express 5)
+//   Cyber-gadget → github.com/yokanm/Cyber-gadget
+//   taskflow  → github.com/yokanm/taskflow    (React Native + Expo)
+//   van-life  → github.com/yokanm/van-life
+//   React-Admin-DashBoard → github.com/yokanm/React-Admin-DashBoard
+// See docs/PORTFOLIO_CONTENT_GUIDE.md before editing any number.
+
+// ═══════════ POSTBOARD — FLAGSHIP ═══════════
+const postboard: Project = {
+  slug: 'postboard',
+  title: 'PostBoard',
+  tagline: 'Full-Stack Multi-Tenant Recruitment Platform',
+  category: 'Full-Stack Platform',
+  isFlagship: true,
+  year: 2026,
+  status: 'frontend-live',
+  demoNote:
+    'The React frontend is live. The API needs a deployed PostgreSQL + Redis environment; production deployment is tracked in-repo.',
+  overview:
+    'A multi-tenant job board and applicant tracking system connecting Candidates, Recruiters, Companies, and a platform Super-Admin through five role portals. One React client talks to a versioned Express REST API built on PostgreSQL, Redis, and BullMQ background workers.',
+  problem:
+    'Recruitment platforms blur the boundary between candidate, recruiter, and employer. PostBoard enforces that separation — each actor logs in against its own principal and sees only its own surface, with jobs, applications, analytics, interviews, and billing flowing through one secure API contract.',
+  goals: [
+    'Five isolated role surfaces served by one API with strict role-based access control',
+    'Secure auth: per-principal JWT signing, refresh-token family rotation, Argon2id hashing',
+    'Background email delivery via BullMQ — never inline in request handlers',
+    'Containerized API + worker + Postgres + Redis via Docker Compose with health checks',
+    'A CI pipeline that spins up real Postgres and Redis to run unit, integration, and E2E tests',
+    'Production observability: Sentry, Winston, request tracing, Bull-Board',
+  ],
+  architecture: [
+    { label: 'React SPA', kind: 'source', detail: 'Five role portals · 82 routes' },
+    { label: 'REST API /api/v1', kind: 'layer', detail: '101 versioned Express endpoints' },
+    { label: 'Express + Middleware', kind: 'layer', detail: 'Auth, RBAC, rate-limit, sanitize, Helmet, requestId' },
+    { label: 'Prisma ORM', kind: 'layer', detail: 'Typed queries · 9 migrations' },
+    { label: 'PostgreSQL', kind: 'data', detail: '17 models · 8 enums · pg_trgm search' },
+    { label: 'Redis', kind: 'data', detail: 'Rate limiting · queue backing' },
+    { label: 'BullMQ Workers', kind: 'worker', detail: 'email-worker · retries · DLQ' },
+    { label: 'Monitoring', kind: 'observability', detail: 'Sentry · Winston · Bull-Board · health checks' },
+    { label: 'Deployment', kind: 'deploy', detail: 'Docker Compose · GitHub Actions CI' },
+  ],
+  technologyGroups: [
+    { technology: 'Express 5 + Node', why: 'Mature middleware ecosystem and the canonical layered service/controller pattern this codebase uses.' },
+    { technology: 'Prisma + PostgreSQL', why: 'Typed schema is the source of truth with first-class migrations; 17 models stay consistent as the domain grows.' },
+    { technology: 'Redis + BullMQ', why: 'Redis-backed queues decouple email/background work from request handlers, with retries and a DLQ.' },
+    { technology: 'TanStack Query', why: 'Server-state caching and key invalidation remove a whole class of stale-data client bugs.' },
+    { technology: 'Zustand', why: 'Minimal store for auth + UI state, kept separate from server state by lifecycle.' },
+    { technology: 'Zod', why: 'One schema shared client/server so the client and API cannot disagree on input shape.' },
+    { technology: 'Vite + React 19', why: 'Fast dev server and first-class React 19 + tailwind support on the client build.' },
+  ],
+  engineeringDecisions: [
+    { title: 'Dual-entity JWT signing', explanation: 'Users and Companies have separate signing keys — a company token physically cannot authenticate as a candidate. Enforced at the authorization guard, not by convention.' },
+    { title: 'Refresh-token family rotation', explanation: 'Each refresh rotates the token; a reused stale token revokes the whole family, turning theft into a detectable event.' },
+    { title: 'Argon2id password hashing', explanation: 'Memory-hard (OWASP-recommended) algorithm; GPU cracking is orders of magnitude more expensive than bcrypt.' },
+    { title: 'Background email via BullMQ', explanation: 'Emails are queued jobs with exponential-backoff retries and a dead-letter queue — never inline request work.' },
+    { title: 'RBAC across five actors', explanation: 'Authorization enforced in middleware per role; explicit IDOR and authorization test suites prove tenants cannot cross each other.' },
+    { title: 'Containerized CI with real services', explanation: 'GitHub Actions spins up Postgres 16 + Redis 7 to run unit, integration, and E2E suites, and fails on high-severity npm audit.' },
+  ],
+  tradeoffs: [
+    { choice: 'TanStack Query over Redux', alternative: 'Redux for server state', rationale: 'Query is purpose-built for server cache + invalidation; Redux adds boilerplate for state the server already owns.' },
+    { choice: 'BullMQ over cron jobs', alternative: 'Scheduled cron', rationale: 'Queue workers give retries, concurrency, and observability; cron is fire-and-forget.' },
+    { choice: 'Prisma over raw SQL', alternative: 'Hand-written top of SQL', rationale: 'Type safety + migrations win at a small runtime cost for this domain.' },
+    { choice: 'REST over GraphQL', alternative: 'GraphQL schema', rationale: 'A clear cacheable API contract; GraphQL tooling was not justified for the client surface.' },
+  ],
+  challenges: [
+    'Five-portal RBAC: enforcing that a recruiter token can never read a candidate resource, with tests that assert the negative (IDOR).',
+    'Synchronizing the API contract across two codebases — the frontend parallel-refresh queue must never issue duplicate token refreshes.',
+    'Splitting transport: httpOnly cookie for refresh tokens vs in-memory bearer for access tokens, so XSS cannot read either.',
+  ],
+  testing: [
+    'Backend: 34 Jest suites · ~7,230 LOC across unit and integration (auth, authorization, candidate/recruiter/company journeys, IDOR).',
+    'Frontend: Vitest + MSW for API-mocked route tests; Playwright E2E (auth setup, access-control, companies, jobs, dashboards).',
+    'Load: k6 scenarios (auth, jobs, applications, notifications, user-journey) + autocannon benchmark.',
+    'Security: explicit IDOR and authorization suites assert cross-tenant isolation.',
+  ],
+  performance: [
+    'Route-level code splitting and lazy pages across the five portals.',
+    'TanStack Query server-state caching reduces duplicate fetches.',
+    'Redis-backed rate limiting protects hot endpoints without skewing in-memory state.',
+  ],
+  security: [
+    'Argon2id password hashing; JWT access/refresh rotation with family revocation.',
+    'RBAC enforced in dedicated per-role authorization middleware.',
+    'Helmet HTTP headers; Zod + express-validator input validation; DOMPurify sanitization.',
+    'Rate limiting backed by rate-limit-redis with per-role tunable limits.',
+    'CI security gate: npm audit at high-severity blocks the build.',
+  ],
+  lessonsLearned: [
+    'Multi-tenancy is a security property, not a feature — isolation must be enforced and tested, not assumed.',
+    'Writing the API contract down first makes a two-repo stack tractable to test and iterate.',
+    'Queueing from day one fixed a fragile in-request email path; background processing was not an afterthought.',
+  ],
+  futureRoadmap: [
+    'Deploy the API (Postgres + Redis) behind a live demo with TLS and a reverse proxy.',
+    'Real-time notifications via WebSockets / SSE.',
+    'OpenTelemetry distributed traces across API + workers.',
+    'Feature-flag delivery for the role-portal surface.',
+  ],
+  productionReadiness: [
+    { category: 'Authentication', evidence: 'JWT access/refresh rotation · Argon2id' },
+    { category: 'Authorization', evidence: 'Per-role RBAC middleware · IDOR-tested' },
+    { category: 'Validation', evidence: 'Zod client+server · express-validator' },
+    { category: 'Security', evidence: 'Helmet · rate-limit-redis · sanitize · CI audit' },
+    { category: 'Monitoring', evidence: 'Sentry · Bull-Board · health checks' },
+    { category: 'Logging', evidence: 'Winston + request context · morgan' },
+    { category: 'Health Checks', evidence: '/health + Docker healthcheck clauses' },
+    { category: 'CI / CD', evidence: 'lint · typecheck · prisma · test · build · security · e2e' },
+    { category: 'Docker', evidence: 'Multi-stage Dockerfile + worker · Compose' },
+    { category: 'Testing', evidence: '34 Jest · Vitest · MSW · Playwright · k6' },
+    { category: 'Performance', evidence: 'Route splitting · caching · load benchmarks' },
+    { category: 'Observability', evidence: 'Request-id tracing · structured logs · Sentry' },
+  ],
+  metrics: ['101 API endpoints', '82 frontend routes', '5 RBAC portals', '17 DB models', '34 Jest suites', 'Playwright E2E'],
+  deployment: [{ label: 'Frontend (Vercel)', url: 'https://postboard-ruby.vercel.app/' }],
+  demoStatus: 'Frontend live · API deployment tracked',
+  repositories: [
+    { label: 'Frontend :: yokanm/postboard', url: 'https://github.com/yokanm/postboard' },
+    { label: 'Backend :: yokanm/jobboard', url: 'https://github.com/yokanm/jobboard' },
+  ],
+  documentation: [
+    { label: 'API Contract', url: 'https://github.com/yokanm/jobboard/blob/main/API_CONTRACT.md' },
+    { label: 'Deployment Guide', url: 'https://github.com/yokanm/jobboard/blob/main/DEPLOYMENT.md' },
+  ],
+  seo: {
+    title: 'PostBoard — Full-Stack Multi-Tenant Recruitment Platform',
+    description:
+      'PostBoard: a 5-role multi-tenant recruitment platform — 101 API endpoints, 82 routes, RBAC, Redis+BullMQ, Docker CI, and 34 Jest suites.',
   },
-  {
-    id: 'frontend',
-    category: 'Frontend & Mobile',
-    icon: 'monitor',
-    skills: [
-      { name: 'Tailwind CSS v4', level: 'core' },
-      { name: 'Framer Motion', level: 'core' },
-      { name: 'React Router', level: 'core' },
-      { name: 'React Native + Expo', level: 'proficient' },
-      { name: 'TanStack Query', level: 'proficient' },
-      { name: 'React Router', level: 'proficient' },
-      { name: 'Zustand', level: 'proficient' },
-      { name: 'Radix UI / shadcn', level: 'proficient' },
-      { name: 'React Hook Form + Zod', level: 'proficient' },
-      { name: 'Redux', level: 'proficient' },
-    ],
+};
+
+// ═══════════ CYBER GADGET ═══════════
+const cyberGadget: Project = {
+  slug: 'cyber-gadget',
+  title: 'Cyber Gadget',
+  tagline: 'Production E-Commerce Store',
+  category: 'Web Application',
+  year: 2025,
+  status: 'live',
+  overview:
+    'A full-stack electronics store with Next.js 15 App Router, TypeScript, and Supabase (PostgreSQL) — 200+ products, URL-persisted multi-parameter filters, debounced search, and a 3-step checkout.',
+  problem:
+    'Online stores need filterable catalogs that scale without a dedicated backend team. Cyber Gadget proves SSR + client interactivity can ship a large catalog on a serverless Postgres store with no separate API layer.',
+  goals: [
+    '200+ product catalog with server-side rendering for fast first paint',
+    'Filters that survive refresh, support bookmarking, and can be shared as links',
+    'A 3-step checkout with Luhn card validation and ARIA live regions',
+    'A single Next.js App Router codebase crossing the server/client boundary correctly',
+  ],
+  architecture: [
+    { label: 'Next.js App Router', kind: 'source', detail: 'SSR wrapper gives instant first paint' },
+    { label: 'Server + client clients', kind: 'layer', detail: 'lib/api.ts abstraction over boundary' },
+    { label: 'Supabase (PostgreSQL)', kind: 'data', detail: 'Products, cart, filters, auth' },
+    { label: 'Context providers', kind: 'layer', detail: 'Toast → Auth → Cart → Wishlist' },
+    { label: 'Checkout', kind: 'layer', detail: '3-step · Luhn validation · ARIA live' },
+  ],
+  technologyGroups: [
+    { technology: 'Next.js 15', why: 'App Router gives a single codebase with SSR for storefront + client interactivity.' },
+    { technology: 'Supabase (PostgreSQL)', why: 'Hosted relational store with auth and edge deployment — no backend team required.' },
+    { technology: 'Tailwind v4', why: 'Utility-first styling that matches the brutalist design without a config file.' },
+  ],
+  engineeringDecisions: [
+    { title: 'URL-persisted filter state', explanation: 'Filters live in search params via router.replace, so refresh, bookmarking, and sharing work by URL — component state could not.' },
+    { title: 'Two-phase localStorage mount', explanation: 'Cart state is mounted in a controlled two-phase effect to prevent a Next.js SSR/client hydration mismatch.' },
+  ],
+  tradeoffs: [
+    { choice: 'Supabase over a custom API', alternative: 'Separate Node API', rationale: 'Removes backend surface for a catalog use case; tradeoff is less custom control over edge cases.' },
+  ],
+  challenges: [
+    'Keeping 200+ product rows fast under multi-parameter filtering with debounced search (setTimeout debounce).',
+    'Splitting Suspense boundaries so product grid sections load independently on slow networks.',
+  ],
+  testing: ['Component + integration of the checkout and filter flows in the client package.'],
+  performance: [
+    'Debounced search (300ms default) to reduce filter churn.',
+    'Server Components for initial product load (SSR) vs client components for interactivity.',
+    'Suspense boundaries per grid section.',
+  ],
+  security: [
+    'Luhn card-number validation in checkout; field-level touch tracking.',
+    'ARIA live regions for screen-reader feedback during checkout.',
+    'Known debt — localStorage plaintext password auth for demo; documented migration to Supabase Auth is tracked in-repo.',
+  ],
+  lessonsLearned: [
+    'URL as state is underrated for filters — it is free deep-linking and shareability.',
+    'Owning the auth debt publicly is honest engineering; transparent remediation beats hiding it.',
+  ],
+  futureRoadmap: [
+    'Migrate auth to Supabase Auth (bcrypt + session) and remove localStorage passwords.',
+    'Add server-side paginated search with full-text.',
+  ],
+  productionReadiness: [
+    { category: 'Authentication', evidence: 'Supabase client auth (demo) — migration tracked' },
+    { category: 'Validation', evidence: 'Luhn checkout + Zod schema on auth' },
+    { category: 'Monitoring', evidence: 'Next.js telemetry in dev; deployment on Vercel' },
+    { category: 'Performance', evidence: 'SSR + Suspense + debounced search' },
+    { category: 'CI / CD', evidence: 'Vercel preview deployments' },
+  ],
+  metrics: ['200+ products', 'URL-persisted filters', '3-step checkout'],
+  deployment: [{ label: 'Live', url: 'https://cyber-gadget-v2.vercel.app/' }],
+  demoStatus: 'Live',
+  repositories: [{ label: 'yokanm/Cyber-gadget', url: 'https://github.com/yokanm/Cyber-gadget' }],
+  documentation: [],
+  seo: {
+    title: 'Cyber Gadget — Production E-Commerce Store',
+    description:
+      'Cyber Gadget: Next.js 15 + Supabase store — 200+ products, URL-persisted filters, server components, and a 3-step checkout.',
   },
-  {
-    id: 'backend',
-    category: 'Backend & Data',
-    icon: 'server',
-    skills: [
-      { name: 'Prisma ORM', level: 'core' },
-      { name: 'Redis (ioredis)', level: 'proficient' },
-      { name: 'BullMQ', level: 'proficient' },
-      { name: 'JWT + Refresh Rotation', level: 'core' },
-      { name: 'Argon2id / bcrypt', level: 'proficient' },
-      { name: 'PostgreSQL', level: 'proficient' },
-      { name: 'Mongo DB', level: 'proficient' },
-      { name: 'Firebase (Auth + Firestore)', level: 'proficient' },
-      { name: 'Cloudinary', level: 'proficient' },
-      { name: 'REST API Design', level: 'core' },
-      { name: 'Docker + Docker Compose', level: 'proficient' },
-    ],
+};
+
+// ═══════════ TASKFLOW ═══════════
+const taskflow: Project = {
+  slug: 'taskflow',
+  title: 'TaskFlow',
+  tagline: 'Cross-Platform Mobile Task Manager',
+  category: 'Mobile Application',
+  year: 2026,
+  status: 'live',
+  overview:
+    'A cross-platform (iOS · Android · web) task manager — React Native + Expo client with its own Express/Prisma backend. httpOnly refresh cookies, in-memory access tokens, and optimistic status updates.',
+  problem:
+    'Mobile apps often leak tokens to AsyncStorage or refetch everything on every tap. TaskFlow demonstrates a mobile auth model (access token in memory only) plus optimistic UI on slow connections.',
+  goals: [
+    'Token hygiene: access token lives in memory (never in storage); refresh token in httpOnly cookie that JS cannot read',
+    'Optimistic task-status updates with automatic revert on failure',
+    'Six accent themes persisted server-side so they follow the user across reinstalls',
+  ],
+  architecture: [
+    { label: 'React Native (Expo) client', kind: 'source', detail: 'iOS + Android + web' },
+    { label: 'REST API', kind: 'layer', detail: 'Express 5 + Prisma' },
+    { label: 'SQLite', kind: 'data', detail: 'Local + Prisma persistence' },
+    { label: 'Auth', kind: 'layer', detail: 'httpOnly refresh cookie + in-memory access token' },
+  ],
+  technologyGroups: [
+    { technology: 'Expo + React Native', why: 'One TypeScript codebase ships iOS, Android, and web with Expo Router.' },
+    { technology: 'Express + Prisma', why: 'A real backend with the author proven in the PostBoard ecosystem.' },
+    { technology: 'Zustand', why: 'Minimal observable store for UI + auth state; server data fetched separately.' },
+  ],
+  engineeringDecisions: [
+    { title: 'In-memory access token', explanation: 'The access token is never persisted to AsyncStorage; a refresh-only httpOnly cookie restores the session silently on startup.' },
+    { title: 'Optimistic updates', explanation: 'Tapping a status updates UI immediately, calls API in background, and reverts on failure — instant on slow connections.' },
+  ],
+  tradeoffs: [
+    { choice: 'Optimistic updates over wait-for-confirm', alternative: 'Disabled until confirmed', rationale: 'Lower latency at the cost of a revert path; the revert is well-tested.' },
+    { choice: 'Local SQLite + API', alternative: 'Fully server-render server', rationale: 'Offline-capable local state with server sync for multi-device truth.' },
+  ],
+  challenges: [
+    'Keeping auth tokens out of device storage while still restoring sessions after a cold start.',
+    'Cross-platform theme + optimistic-state sync between the store and API.',
+  ],
+  testing: [
+    'Client unit tests for the store logic and optimistic cycle.',
+  ],
+  performance: ['Optimistic UI removes a network round-trip from the critical path.'],
+  security: [
+    'httpOnly refresh cookie (XSS cannot read); access token in memory only',
+    'Zod schemas mirrored on client and server to prevent client/server drift',
+  ],
+  lessonsLearned: [
+    'Mobile auth requires an explicit token-transport decision — "just use a token" is not enough.',
+    'Sharing Zod schema client/server is a cheap, high-value drift guard.',
+  ],
+  futureRoadmap: [
+    'Add offline queue for offline-first task sync.',
+    'Push notifications for due tasks.',
+  ],
+  productionReadiness: [
+    { category: 'Authentication', evidence: 'httpOnly cookie + in-memory token' },
+    { category: 'Validation', evidence: 'Zod client+server' },
+    { category: 'Testing', evidence: 'Client unit tests' },
+  ],
+  metrics: ['iOS + Android + web', 'httpOnly auth', 'Optimistic UI'],
+  deployment: [],
+  demoStatus: null,
+  repositories: [{ label: 'yokanm/taskflow', url: 'https://github.com/yokanm/taskflow' }],
+  documentation: [],
+  seo: {
+    title: 'TaskFlow — Cross-Platform Mobile Task Manager',
+    description:
+      'TaskFlow: React Native + Expo with an Express/Prisma backend — httpOnly cookies, in-memory access tokens, and optimistic updates.',
   },
-  {
-    id: 'tooling',
-    category: 'Tooling & Testing',
-    icon: 'tool',
-    skills: [
-      { name: 'Git / GitHub', level: 'core' },
-      { name: 'Vite', level: 'core' },
-      { name: 'Jest + ts-jest', level: 'proficient' },
-      { name: 'Swagger / OpenAPI 3.0', level: 'proficient' },
-      { name: 'Postman', level: 'proficient' },
-      { name: 'Vercel / Netlify', level: 'proficient' },
-      { name: 'Winston (logging)', level: 'proficient' },
-    ],
-  },
+};
+
+// ══════════════════════════════════════════════════════════
+// PRE-ORDERED LIST (flagship first, then by year)
+// ══════════════════════════════════════════════════════════
+export const projects: Project[] = [postboard, cyberGadget, taskflow];
+
+// ═══════════ ENGINEERING HIGHLIGHTS (homepage) ═══════════
+export const engineeringHighlights: EngineeringHighlight[] = [
+  { title: 'Multi-Tenant Architecture', projectSlug: 'postboard' },
+  { title: 'Role-Based Access Control', projectSlug: 'postboard' },
+  { title: 'JWT Refresh Rotation', projectSlug: 'postboard' },
+  { title: 'Argon2id Hashing', projectSlug: 'postboard' },
+  { title: 'Docker + Compose', projectSlug: 'postboard' },
+  { title: 'PostgreSQL', projectSlug: 'postboard' },
+  { title: 'Prisma ORM', projectSlug: 'postboard' },
+  { title: 'Redis', projectSlug: 'postboard' },
+  { title: 'BullMQ Workers', projectSlug: 'postboard' },
+  { title: 'GitHub Actions CI', projectSlug: 'postboard' },
+  { title: 'Sentry + Winston', projectSlug: 'postboard' },
+  { title: 'k6 Load Testing', projectSlug: 'postboard' },
+  { title: 'Playwright E2E', projectSlug: 'postboard' },
+  { title: 'Vitest', projectSlug: 'postboard' },
+  { title: 'Zod Validation', projectSlug: 'postboard' },
+  { title: 'Optimistic UI (Mobile)', projectSlug: 'taskflow' },
 ];
 
-// ============================================
-// SECURITY SKILLS — split by evidence type
-// ============================================
-
-// Code-verified: every item below exists in a public repository
-export const appliedSecuritySkills: SecuritySkill[] = [
-  { name: 'Argon2id Password Hashing', category: 'applied' },
-  { name: 'JWT Rotation + Family Revocation', category: 'applied' },
-  { name: 'httpOnly Refresh Cookies', category: 'applied' },
-  { name: 'In-Memory Access Tokens', category: 'applied' },
-  { name: 'DOMPurify XSS Middleware', category: 'applied' },
-  { name: 'Redis-Backed Rate Limiting', category: 'applied' },
-  { name: 'Zod Input Validation (server + client)', category: 'applied' },
-  { name: 'DB-Level Duplicate Constraints', category: 'applied' },
-];
-
-// Google Cybersecurity Certificate — conceptual exposure, not in project code
-export const conceptualSecuritySkills: SecuritySkill[] = [
-  { name: 'Threat Modeling', category: 'conceptual' },
-  { name: 'Incident Response', category: 'conceptual' },
-  { name: 'SIEM Concepts', category: 'conceptual' },
-  { name: 'SIEM Tools', category: 'conceptual' },
-  { name: 'Vulnerability Assessment', category: 'conceptual' },
-  { name: 'Network Security', category: 'conceptual' },
-  { name: 'Risk Assessment', category: 'conceptual' },
-  { name: 'Endpoint Security,Protection and Monitoring', category: 'conceptual' },
-];
-
-// ============================================
-// HOME STATS
-// ============================================
+// ═══════════ HOME STATS (verified) ═══════════
 export const homeStats = [
-  { value: '4', label: 'Projects shipped' },
-  { value: '60%+', label: 'Test coverage (Job Board API)' },
-  { value: '2', label: 'In active development' },
+  { value: '1', label: 'Flagship platform' },
+  { value: '101', label: 'API endpoints' },
+  { value: '82', label: 'Frontend routes' },
+  { value: '5', label: 'RBAC portals' },
 ];
+
+export { postboard };

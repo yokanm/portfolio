@@ -1,39 +1,99 @@
 // ============================================
 // PORTFOLIO TYPE DEFINITIONS
 // ============================================
+// The project metadata model is the SINGLE SOURCE OF TRUTH for all project
+// content. All pages (home, projects index, project detail, SEO, structured
+// data) consume this model. Nothing project-specific is hardcoded in a
+// component.
 
-export type ProjectStatus = 'live' | 'private' | 'in-development' | 'archived';
+export type ProjectStatus = 'live' | 'frontend-live' | 'in-development' | 'private';
 
-export interface ProjectImages {
-  thumbnail?: string;
-  hero?: string;
-  gallery?: string[];
+/** A single layer / node in a flow-based architecture diagram. */
+export interface ArchitectureNode {
+  label: string;
+  detail?: string;
+  kind?: 'source' | 'layer' | 'data' | 'worker' | 'observability' | 'deploy';
+}
+
+/** Why a technology was chosen (not merely what was used). */
+export interface TechnologyChoice {
+  technology: string;
+  why: string;
+}
+
+/** A documented architectural trade-off. */
+export interface Tradeoff {
+  choice: string;
+  alternative: string;
+  rationale: string;
+}
+
+/** A numbered engineering decision with its reason. */
+export interface EngineeringDecision {
+  title: string;
+  explanation: string;
+}
+
+/** A production-readiness capability with repository evidence. */
+export interface ReadinessItem {
+  category: string;
+  evidence: string;
+}
+
+/** A repository / documentation link. */
+export interface ProjectLink {
+  label: string;
+  url: string;
+}
+
+export interface ProjectSeo {
+  title: string;
+  description: string;
 }
 
 export interface Project {
-  id: string;
+  slug: string;
   title: string;
+  tagline: string;
   category: string;
-  description: string;
-  longDescription?: string;
-  techStack: string[];
-  githubUrl: string;
-  liveUrl: string;
-  featured?: boolean;
-  year?: number;
-  highlights?: string[];
-  engineeringDecision?: string;
-  /** Explicit status — controls which UI affordances are shown */
-  status?: ProjectStatus;
-  /** Quantified impact metrics displayed on the project card */
-  metrics?: string[];
-  /** Optional images for visual project showcase */
-  images?: ProjectImages;
+  isFlagship?: boolean;
+  year: number;
+  status: ProjectStatus;
+  demoNote?: string;
+  /** 3-5 compact "what it is" — used on cards + indexes. */
+  overview: string;
+  problem: string;
+  goals: string[];
+  /** Architecture diagram node list (rendered by <ArchitectureDiagram>). */
+  architecture: ArchitectureNode[];
+  /** Where each technology appears (grouped), with a "why". */
+  technologyGroups: TechnologyChoice[];
+  engineeringDecisions: EngineeringDecision[];
+  tradeoffs: Tradeoff[];
+  challenges: string[];
+  testing: string[];
+  performance: string[];
+  security: string[];
+  lessonsLearned: string[];
+  futureRoadmap: string[];
+  productionReadiness: ReadinessItem[];
+  metrics: string[];
+  deployment: ProjectLink[];
+  demoStatus: string | null;
+  repositories: ProjectLink[];
+  documentation: ProjectLink[];
+  seo: ProjectSeo;
 }
+
+// ============================================
+// SKILLS
+// ============================================
 
 export interface SkillGroup {
   id: string;
   category: string;
+  /** Short note on WHERE this group is used (anchors stack to evidence). */
+  usedIn: string;
   icon: string;
   skills: Skill[];
 }
@@ -48,32 +108,9 @@ export interface SecuritySkill {
   category?: 'applied' | 'conceptual';
 }
 
-export interface Service {
-  id: string;
-  title: string;
-  description: string;
-  technologies: string[];
-  icon: string;
-}
-
-export interface SocialLink {
-  label: string;
-  url: string;
-  icon: string;
-}
-
-export interface NavItem {
-  label: string;
-  path: string;
-  icon: string;
-}
-
-export interface ContactFormData {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
+// ============================================
+// PERSONAL / MISC
+// ============================================
 
 export interface PersonalInfo {
   name: string;
@@ -94,4 +131,11 @@ export type Theme = 'dark' | 'light';
 export interface HomeStat {
   value: string;
   label: string;
+}
+
+export interface EngineeringHighlight {
+  /** Short label, e.g. "JWT Refresh Rotation". */
+  title: string;
+  /** Project slug the capability is demonstrated in (link target). */
+  projectSlug: string;
 }

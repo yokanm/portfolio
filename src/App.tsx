@@ -5,6 +5,7 @@ import { Layout } from '@/components/shared/Layout';
 const HomePage = lazy(() => import('@/features/home/HomePage').then(m => ({ default: m.HomePage })));
 const AboutPage = lazy(() => import('@/features/about/AboutPage').then(m => ({ default: m.AboutPage })));
 const ProjectsPage = lazy(() => import('@/features/projects/ProjectsPage').then(m => ({ default: m.ProjectsPage })));
+const ProjectDetailPage = lazy(() => import('@/features/projects/ProjectDetailPage').then(m => ({ default: m.ProjectDetailPage })));
 const ExperiencePage = lazy(() => import('@/features/experience/ExperiencePage').then(m => ({ default: m.ExperiencePage })));
 const SkillsPage = lazy(() => import('@/features/skills/SkillsPage').then(m => ({ default: m.SkillsPage })));
 const ContactPage = lazy(() => import('@/features/contact/ContactPage').then(m => ({ default: m.ContactPage })));
@@ -32,6 +33,7 @@ export default function App() {
           <Route index element={<Suspense fallback={<PageLoader />}><HomePage /></Suspense>} />
           <Route path="about" element={<Suspense fallback={<PageLoader />}><AboutPage /></Suspense>} />
           <Route path="projects" element={<Suspense fallback={<PageLoader />}><ProjectsPage /></Suspense>} />
+          <Route path="projects/:slug" element={<Suspense fallback={<PageLoader />}><ProjectDetailPage /></Suspense>} />
           <Route path="experience" element={<Suspense fallback={<PageLoader />}><ExperiencePage /></Suspense>} />
           <Route path="skills" element={<Suspense fallback={<PageLoader />}><SkillsPage /></Suspense>} />
           <Route path="contact" element={<Suspense fallback={<PageLoader />}><ContactPage /></Suspense>} />

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Monitor, Server, Database, Settings, Shield } from 'lucide-react';
 import { SectionTitle } from '@/components/shared/SectionTitle';
+import { SeoTag } from '@/components/shared/SeoTag';
 import { skillGroups, appliedSecuritySkills, conceptualSecuritySkills } from '@/data/portfolio';
 import type { SkillGroup } from '@/types';
 
@@ -57,6 +58,10 @@ export function SkillsPage() {
 
   return (
     <div className="px-6 md:px-12 lg:px-16 py-16 md:py-24">
+      <SeoTag
+        title="Skills"
+        description="Ayokanmi Ogunyebi's technical stack: React, Next.js, TypeScript, Node.js, Express, PostgreSQL, Redis, Docker, security practices, and testing tooling."
+      />
       <SectionTitle index="01" label="Skills" title="Technical Stack"
         description="The technologies, tools, and practices that power my work — organised by domain." />
 
@@ -81,7 +86,7 @@ export function SkillsPage() {
         <div>
           <h3 className="font-display font-bold text-xl uppercase text-on-surface">{activeGroup.category}</h3>
           <p className="font-mono text-[0.6rem] uppercase tracking-widest text-on-surface-faint mt-1">
-            {activeGroup.skills.length} skills
+            {activeGroup.skills.length} skills · Used in: {activeGroup.usedIn}
           </p>
         </div>
         <div className="hidden sm:flex items-center gap-4">
@@ -191,7 +196,7 @@ export function SkillsPage() {
               <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-outline-strong/10">
                 <div className="text-primary"><CategoryIcon id={group.id} /></div>
                 <h4 className="font-display font-bold text-xs uppercase text-on-surface tracking-wide">
-                  {group.category.replace(' Development', '').replace(' & Cloud', '')}
+                  {group.category}
                 </h4>
               </div>
               <ul className="space-y-1.5">

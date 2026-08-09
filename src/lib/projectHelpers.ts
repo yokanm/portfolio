@@ -1,23 +1,28 @@
 import type { Project } from '@/types';
 import { projects } from '@/data/portfolio';
 
-/**
- * Returns all featured projects, ordered by year descending.
- * Visibility is controlled entirely by the `featured` flag in portfolio.ts.
- */
-export function getFeaturedProjects(): Project[] {
-  return projects
-    .filter((p) => p.featured)
-    .sort((a, b) => (b.year ?? 0) - (a.year ?? 0));
+/** All projects in declaration order (flagship first). */
+export function getAllProjects(): Project[] {
+  return projects;
 }
 
-/**
- * Returns at most `limit` featured projects for the homepage "Selected Work" section.
- * Excludes WIP projects (status: 'in-development') from the homepage showcase
- * unless they have a live URL — keeps the homepage presenting shipped work.
- */
-export function getHomepageProjects(limit = 3): Project[] {
-  return getFeaturedProjects()
-    .filter((p) => p.status === 'live' || p.liveUrl)
-    .slice(0, limit);
+/** The single flagship (PostBoard) — undefined if none flagged. */
+export function getFlagship(): Project | undefined {
+  return projects.find((p) => p.isFlagship);
+}
+
+/** Projects excluding the flagship, for the "selected work" rows. */
+export function getSelectedProjects(limit?: number): Project[] {
+  const rest = projects.filter((p) => !p.isFlagship);
+  return limit ? rest.slice(0, limit) : rest;
+}
+
+/** Resolve a project by slug (case-insensitive). */
+export function getProjectBySlug(slug: string): Project | undefined {
+  return projects.find((p) => p.slug === slug.toLowerCase());
+}
+
+/** Quick stat line for the flagship card. */
+export function getFlagshipMetrics(): string[] {
+  return getFlagship()?.metrics.slice(0, 4) ?? [];
 }

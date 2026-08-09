@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Download, Printer, Github, Linkedin, Mail, MapPin, ExternalLink, Shield } from 'lucide-react';
 import { SectionTitle } from '@/components/shared/SectionTitle';
+import { SeoTag } from '@/components/shared/SeoTag';
 import { Button } from '@/components/ui/button';
 import { personalInfo, projects, skillGroups, appliedSecuritySkills } from '@/data/portfolio';
 import { trackEvent } from '@/lib/analytics';
@@ -15,21 +16,18 @@ const fadeIn = (delay = 0) => ({
 export function ResumePage() {
   return (
     <div className="px-6 md:px-12 lg:px-16 py-16 md:py-24">
+      <SeoTag
+        title="Resume"
+        description="Curriculum Vitae for Ayokanmi Ogunyebi — Full-Stack Software Engineer, security-first, PostBoard flagship."
+      />
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-16">
         <SectionTitle index="01" label="Resume" title="Curriculum Vitae" className="mb-0" />
         <div className="flex gap-3">
           <Button variant="outline" size="sm" onClick={() => window.print()} aria-label="Print resume">
             <Printer size={13} aria-hidden="true" />Print
           </Button>
-          <Button size="sm" asChild>
-            <a
-              href="/ayokanmi-ogunyebi-resume.pdf"
-              download="Ayokanmi-Ogunyebi-Resume.pdf"
-              onClick={() => trackEvent('resume_download')}
-              aria-label="Download resume as PDF"
-            >
-              <Download size={13} aria-hidden="true" />Download PDF
-            </a>
+          <Button size="sm" disabled title="Resume PDF coming soon — use Print in the meantime">
+            <Download size={13} aria-hidden="true" />Download PDF
           </Button>
         </div>
       </div>
@@ -81,12 +79,11 @@ export function ResumePage() {
             Professional Summary
           </h2>
           <p className="font-body text-sm text-on-surface-muted leading-relaxed">
-            Full-Stack Engineer with six projects across web, REST API, and mobile — all in TypeScript,
-            four live in production and two in active development.
-            Auth designed with Argon2id, refresh token rotation, and httpOnly cookies as standard practice,
-            not as an add-on. Strongest in Node.js/Express APIs paired with React or Next.js frontends,
-            with React Native for cross-platform mobile. Google Cybersecurity Professional Certificate.
-            Open to remote roles internationally.
+            Full-Stack Software Engineer shipping production systems across web, mobile, and API —
+            in TypeScript. Flagship: PostBoard, a multi-tenant recruitment platform (5 role portals,
+            101 API endpoints, 82 routes) built on React, Express, PostgreSQL, Redis, BullMQ, and Docker.
+            Auth designed with Argon2id, JWT refresh rotation, and httpOnly cookies as standard practice.
+            Google Cybersecurity Professional Certificate. Open to remote roles internationally.
           </p>
         </motion.section>
 
@@ -120,58 +117,45 @@ export function ResumePage() {
           </h2>
           <div className="space-y-6">
             {projects.map((project) => {
-              const isLive = project.status === 'live' && Boolean(project.liveUrl);
+              const isLive = project.status === 'live' && project.deployment.length > 0;
               return (
-                <div key={project.id}>
+                <div key={project.slug}>
                   <div className="flex items-start justify-between gap-4 flex-wrap mb-2">
                     <div>
                       <h3 className="font-display font-bold text-sm uppercase text-on-surface">
                         {project.title}
                       </h3>
                       <p className="font-mono text-[0.6rem] uppercase tracking-widest text-primary mt-0.5">
-                        {project.category}
+                        {project.category} · {project.year}
                       </p>
                     </div>
                     <div className="flex gap-3">
-                      {project.githubUrl && (
-                        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
+                      {project.repositories.map((repo) => (
+                        <a key={repo.url} href={repo.url} target="_blank" rel="noopener noreferrer"
                           aria-label={`${project.title} on GitHub`}
-                          onClick={() => trackEvent('project_repo_click', { project: project.id })}
+                          onClick={() => trackEvent('project_repo_click', { project: project.slug })}
                           className="flex items-center gap-1 font-mono text-[0.55rem] uppercase tracking-widest text-on-surface-faint hover:text-primary transition-colors">
                           <Github size={10} aria-hidden="true" />Source
                         </a>
-                      )}
+                      ))}
                       {isLive && (
-                        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
+                        <a href={project.deployment[0].url} target="_blank" rel="noopener noreferrer"
                           aria-label={`${project.title} live demo`}
-                          onClick={() => trackEvent('project_demo_click', { project: project.id })}
+                          onClick={() => trackEvent('project_demo_click', { project: project.slug })}
                           className="flex items-center gap-1 font-mono text-[0.55rem] uppercase tracking-widest text-on-surface-faint hover:text-primary transition-colors">
                           <ExternalLink size={10} aria-hidden="true" />Live
                         </a>
                       )}
-                      {!isLive && project.status && (
-                        <span className="font-mono text-[0.55rem] uppercase tracking-widest text-on-surface-subtle">
-                          {project.status === 'private' ? 'API' : project.status === 'in-development' ? 'WIP' : project.status}
-                        </span>
-                      )}
                     </div>
                   </div>
                   <p className="font-body text-xs text-on-surface-faint leading-relaxed mb-2">
-                    {project.description}
+                    {project.overview}
                   </p>
-                  {project.metrics && project.metrics.length > 0 && (
+                  {project.metrics.length > 0 && (
                     <p className="font-body text-xs text-primary/60 leading-relaxed mb-2">
                       {project.metrics.join(' · ')}
                     </p>
                   )}
-                  <div className="flex flex-wrap gap-1.5">
-                    {project.techStack.map((tech) => (
-                      <span key={tech}
-                        className="font-mono text-[0.5rem] uppercase tracking-widest border border-outline text-on-surface-faint px-1.5 py-0.5">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
                 </div>
               );
             })}
