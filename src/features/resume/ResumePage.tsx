@@ -26,9 +26,14 @@ export function ResumePage() {
           <Button variant="outline" size="sm" onClick={() => window.print()} aria-label="Print resume">
             <Printer size={13} aria-hidden="true" />Print
           </Button>
-          <Button size="sm" disabled title="Resume PDF coming soon — use Print in the meantime">
-            <Download size={13} aria-hidden="true" />Download PDF
-          </Button>
+          <a 
+            href="/Ayokanmi_Ogunyebi_CV.pdf"
+            download="Ayokanmi_Ogunyebi_CV.pdf"
+          >
+            <Button size="sm">
+              <Download size={13} aria-hidden="true" />Download PDF
+            </Button>
+          </a>
         </div>
       </div>
 

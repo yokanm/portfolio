@@ -65,7 +65,7 @@ const postboard: Project = {
   category: 'Full-Stack Platform',
   isFlagship: true,
   year: 2026,
-  status: 'frontend-live',
+  status: 'live',
   demoNote:
     'The React frontend is live. The API needs a deployed PostgreSQL + Redis environment; production deployment is tracked in-repo.',
   overview:
@@ -164,7 +164,7 @@ const postboard: Project = {
   ],
   metrics: ['101 API endpoints', '82 frontend routes', '5 RBAC portals', '17 DB models', '34 Jest suites', 'Playwright E2E'],
   deployment: [{ label: 'Frontend (Vercel)', url: 'https://postboard-ruby.vercel.app/' }],
-  demoStatus: 'Frontend live · API deployment tracked',
+  demoStatus: 'live',
   repositories: [
     { label: 'Frontend :: yokanm/postboard', url: 'https://github.com/yokanm/postboard' },
     { label: 'Backend :: yokanm/jobboard', url: 'https://github.com/yokanm/jobboard' },
